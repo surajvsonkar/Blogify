@@ -2,7 +2,7 @@
 import { useRef, useState } from 'react';
 import axios from 'axios';
 import { LoaderFive, LoaderOne } from '@/components/ui/loader';
-import { redirect } from 'next/navigation';
+import { redirect, useRouter } from 'next/navigation';
 
 export default function Register() {
 	const [loading, setLoading] = useState(false);
@@ -10,6 +10,7 @@ export default function Register() {
 	const usernameRef = useRef<HTMLInputElement>(null);
 	const passwordRef = useRef<HTMLInputElement>(null);
 	const emailRef = useRef<HTMLInputElement>(null);
+	const router = useRouter();
 
 	const register = async () => {
 		const username = usernameRef.current?.value;
@@ -40,12 +41,14 @@ export default function Register() {
 		setLoading(true);
 
 		try {
-			const res = await axios.post('/api/register', {
+			await axios.post('/api/register', {
 				username,
 				password,
 				email,
 			});
 			setLoading(false);
+			alert('user created successfully');
+			router.push('/login');
 		} catch (error: any) {
 			setLoading(false);
 			setError(error.response.data.msg);
@@ -56,7 +59,9 @@ export default function Register() {
 		<div className="flex justify-center items-center h-screen font-roboto">
 			<div className="border-1 border-black w-100 h-fit flex flex-col justify-center p-12">
 				{loading ? (
-					<LoaderFive text="Registering the user" />
+					<div className='flex items-center justify-center'>
+						<LoaderFive text="Registering the user" />
+					</div>
 				) : (
 					<>
 						<h2 className="text-2xl text-black text-center font-semibold font-montserrat">
@@ -101,7 +106,7 @@ export default function Register() {
 								{error}
 							</div>
 						)}
-						<div className='flex flex-col gap-2'>
+						<div className="flex flex-col gap-2">
 							<button
 								onClick={register}
 								className="cursor-pointer w-full bg-black text-white py-2 px-4 mt-5"
