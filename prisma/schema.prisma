@@ -23,8 +23,8 @@ model Blog{
   title String
   description String
   likes LikedBlogs[]
-  author User  @relation(fields: [authorId], references: [id])
   authorId Int
+  author User  @relation(fields: [authorId], references: [id])
 }
 
 model LikedBlogs {

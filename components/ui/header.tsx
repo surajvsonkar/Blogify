@@ -2,10 +2,14 @@
 import { signOut, useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
 import { LoaderFour } from './loader';
+import { useState } from 'react';
 
 export default function Header() {
+
+	const [openBlogPopup,setOpenBlogPopup] = useState(false)
 	const session = useSession();
 	console.log(session.data);
+	console.log(openBlogPopup)
 
 	return (
 		<div className="py-5 px-8">
@@ -27,6 +31,9 @@ export default function Header() {
 						)}
 						{session.status === 'authenticated' && (
 							<div className="flex justify-center items-center gap-5">
+								<button className="py-2 px-4 rounded-xl font-roboto cursor-pointer border-1 border-black" onClick={()=>setOpenBlogPopup(!openBlogPopup)}>
+									New Blog
+								</button>
 								<button className="py-2 px-4 bg-black text-white rounded-xl font-roboto cursor-pointer">
 									My Blogs
 								</button>

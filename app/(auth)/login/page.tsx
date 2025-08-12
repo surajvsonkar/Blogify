@@ -41,7 +41,7 @@ export default function Login() {
 				setError('Invalid email or password');
 			} else if (result?.ok) {
 				alert('user is logged in successfully');
-				router.push('/');
+				redirect('/');
 			}
 		} catch (error) {
 			setLoading(false);
