@@ -1,63 +1,30 @@
-'use client';
-import { signOut, useSession } from 'next-auth/react';
-import { redirect } from 'next/navigation';
-import { LoaderFour } from './loader';
-import { useRef, useState } from 'react';
-import Popupcard from './popupcard';
-import axios from 'axios';
+import { BookOpen, House, Pen, Settings } from 'lucide-react';
+import Link from 'next/link';
 
 export default function Header() {
-	const session = useSession();
-	const [openBlogPopup, setOpenBlogPopup] = useState(false);
-
 	return (
-		<div className="py-5 px-8">
-			{openBlogPopup && (
-				<Popupcard onClose={()=>setOpenBlogPopup(false)}/>
-			)}
+		<div className="p-4 border-b-black border sticky top-0 z-50 bg-white">
 			<div className="flex justify-between">
-				{session.status === 'loading' ? (
-					<div className="flex justify-center items-center text-black">
-						<LoaderFour />
-					</div>
-				) : (
-					<>
-						<h1 className="text-2xl font-bold font-montserrat">BLOGIFY</h1>
-						{session.status === 'unauthenticated' && (
-							<button
-								className="bg-black py-2 px-4 cursor-pointer text-white rounded-xl font-roboto"
-								onClick={() => {
-									redirect('/login');
-								}}
-							>
-								LOGIN
-							</button>
-						)}
-						{session.status === 'authenticated' && (
-							<div className="flex justify-center items-center gap-5">
-								<button
-									className="py-2 px-4 rounded-xl font-roboto cursor-pointer border-1 border-black"
-									onClick={() => setOpenBlogPopup(!openBlogPopup)}
-								>
-									New Blog
-								</button>
-								<button className="py-2 px-4 bg-black text-white rounded-xl font-roboto cursor-pointer">
-									My Blogs
-								</button>
-								<h2>Welcome, {session.data.user.name}</h2>
-								<button
-									className="py-2 px-4 border-textGray border-1 rounded-2xl cursor-pointer"
-									onClick={() => {
-										signOut();
-										redirect('/login');
-									}}
-								>
-									LOGOUT
-								</button>
-							</div>
-						)}
-					</>
-				)}
+				<Link href={'/'} className="flex gap-2">
+					<Pen />
+					<h1 className="uppercase font-montserrat font-semibold">blogify</h1>
+				</Link>
+
+				<div className="flex justify-between items-center gap-5">
+					<Link className='flex gap-2 justify-center items-center' href={''}>
+						<House />
+						<span>Home</span>
+					</Link>
+					<Link className='flex gap-2 justify-center items-center' href={''}>
+						<BookOpen />
+						<span>Blogs</span>
+					</Link>
+					<Link className='flex gap-2 justify-center items-center' href={''}>
+						<Settings />
+						<span>Dashboard</span>
+					</Link>
+					<Link href={'/login'} className='py-2 px-4 bg-foreground font-roboto text-white rounded-md hover:bg-foreground/90'>Signin</Link>
+				</div>
 			</div>
 		</div>
 	);

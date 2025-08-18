@@ -45,6 +45,7 @@
 	--font-roboto: var(--font-roboto);
 	--font-montserrat: var(--font-montserrat);
 	--color-textGray: #757575;
+	--color-foreground: oklch(.35 .01 258.34);
 }
 
 :root {
@@ -79,7 +80,7 @@
 	--sidebar-border: oklch(0.922 0 0);
 	--sidebar-ring: oklch(0.708 0 0);
 	--background: oklch(1 0 0);
-	--foreground: oklch(0.145 0 0);
+	--foreground: oklch(.35 .08 200.33);
 }
 
 .dark {
