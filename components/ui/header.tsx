@@ -5,7 +5,7 @@ export default function Header() {
 	return (
 		<div className="p-4 border-b-black border sticky top-0 z-50 bg-white">
 			<div className="flex justify-between">
-				<Link href={'/'} className="flex gap-2">
+				<Link href={'/'} className="flex gap-2 justify-center items-center">
 					<Pen />
 					<h1 className="uppercase font-montserrat font-semibold">blogify</h1>
 				</Link>
