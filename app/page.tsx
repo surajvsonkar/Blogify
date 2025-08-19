@@ -19,7 +19,7 @@ export default function Home() {
 				options={{
 					background: { color: '#fff' },
 					particles: {
-						number: { value: 80, density: { enable: true, area: 800 } },
+						number: { value: 200, density: { enable: true, area: 800 } },
 						color: { value: '#000' },
 						shape: { type: 'circle' },
 						opacity: { value: 0.3 },
