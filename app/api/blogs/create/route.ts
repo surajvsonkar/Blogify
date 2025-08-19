@@ -4,13 +4,15 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req:NextRequest){''
     const prisma = new PrismaClient()
     const body = await req.json()
-    const {title,description,authorId} = body
+    const {title,description,authorId,isPublic} = body
+    console.log(body)
     try {
         const blog = await prisma.blog.create({
             data :{
                 title,
                 description,
-                authorId
+                authorId,
+                isPublic:isPublic
             }
         })
 

@@ -22,6 +22,7 @@ model Blog{
   id Int @id @default(autoincrement())
   title String
   description String
+  isPublic Boolean @default(false)
   likes LikedBlogs[]
   authorId Int
   author User  @relation(fields: [authorId], references: [id])
@@ -31,7 +32,6 @@ model LikedBlogs {
   id Int @id @default(autoincrement())
   userId Int
   blogId Int
-
   user User @relation(fields: [userId], references: [id])
   blogs Blog @relation(fields: [blogId], references: [id])
 }
