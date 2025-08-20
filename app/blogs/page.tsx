@@ -11,6 +11,7 @@ import { Calendar, Heart, Search, User } from 'lucide-react';
 import { PrismaClient } from '@prisma/client';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import SearchSort from '@/components/ui/searchsort';
 import {
 	Card,
 	CardContent,
@@ -19,14 +20,31 @@ import {
 	CardTitle,
 } from '@/components/ui/card';
 
-export default async function BlogPage() {
-	const prisma = new PrismaClient();
+interface BlogPageProps {
+	searchParams?: { sort?: string };
+}
 
-	// Get session on server
+export default async function BlogPage({ searchParams }: BlogPageProps) {
+	const prisma = new PrismaClient();
 	const session = await getServerSession(authOptions);
 	const userId = Number(session?.user?.id);
 	// console.log(userId);
 
+	const sort = searchParams?.sort || 'popular';
+	let orderByClause;
+	if (sort === 'newest') {
+		orderByClause = { createdAt: 'desc' };
+	} else if (sort === 'oldest') {
+		orderByClause = { createdAt: 'asc' };
+	} else if (sort === 'popular') {
+		orderByClause = {
+			likes: {
+				_count: 'desc',
+			},
+		};
+	} else {
+		orderByClause = { createdAt: 'desc' };
+	}
 	const truncateWords = (str: string) => {
 		const words = str.split(' ');
 		if (words.length <= 50) {
@@ -50,6 +68,7 @@ export default async function BlogPage() {
 			id: true,
 			createdAt: true,
 		},
+		orderBy: orderByClause,
 	});
 	// console.log(blogs);
 
@@ -67,22 +86,7 @@ export default async function BlogPage() {
 							Discover stories, insights, and ideas from our community
 						</p>
 					</div>
-					<div className="flex flex-col sm:flex-row mb-8 gap-4">
-						<div className="relative flex-1">
-							<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-							<Input placeholder="Search Blogs...." className="pl-10" />
-						</div>
-						<Select>
-							<SelectTrigger>
-								<SelectValue placeholder="Sort by" />
-							</SelectTrigger>
-							<SelectContent>
-								<SelectItem value="newest">Newest First</SelectItem>
-								<SelectItem value="oldest">Oldest First</SelectItem>
-								<SelectItem value="popular">Most Popular</SelectItem>
-							</SelectContent>
-						</Select>
-					</div>
+					<SearchSort />
 					<div className="flex flex-col gap-4">
 						{blogs.map((blog) => (
 							<Card
