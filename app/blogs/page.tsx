@@ -21,13 +21,14 @@ import {
 } from '@/components/ui/card';
 
 interface BlogPageProps {
-	searchParams?: { sort?: string };
+	searchParams?: { sort?: string, search?: string };
 }
 
 export default async function BlogPage({ searchParams }: BlogPageProps) {
 	const prisma = new PrismaClient();
 	const session = await getServerSession(authOptions);
 	const userId = Number(session?.user?.id);
+	const search = searchParams?.search?.trim()
 	// console.log(userId);
 
 	const sort = searchParams?.sort || 'popular';
@@ -55,7 +56,17 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
 
 	// Fetch blogs server-side
 	const blogs = await prisma.blog.findMany({
-		where: { authorId: { not: userId }, isPublic: true },
+		where: {
+			authorId: { not: userId },
+			isPublic: true,
+			...(search && {
+				OR: [
+					{ title: { contains: search, mode: 'insensitive' } },
+					{ description: { contains: search, mode: 'insensitive' } },
+					{ author: { username: { contains: search, mode: 'insensitive' } } },
+				],
+			}),
+		},
 		select: {
 			author: {
 				select: {
