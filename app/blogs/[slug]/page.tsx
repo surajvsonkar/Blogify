@@ -80,6 +80,11 @@ export default async function Blog({ params }: BlogProps) {
 							<p className='font-montserrat'>Like</p>
 						</button>
                     </div>
+
+                    <div className='max-w-3xl mx-auto'>
+                        <div className='whitespace-pre-wrap leading-relaxed'>{blog.description}</div>
+
+                    </div>
 				</header>
 			</article>
 		</div>

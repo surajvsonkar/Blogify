@@ -1,12 +1,4 @@
 import Header from '@/components/ui/header';
-import { Input } from '@/components/ui/input';
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from '@/components/ui/select';
 import { Calendar, Heart, Search, User } from 'lucide-react';
 import { PrismaClient } from '@prisma/client';
 import { getServerSession } from 'next-auth';
@@ -19,19 +11,19 @@ import {
 	CardHeader,
 	CardTitle,
 } from '@/components/ui/card';
+import Link from 'next/link';
 
 interface BlogPageProps {
-	searchParams?: { sort?: string, search?: string };
+	searchParams?: { sort?: string; search?: string };
 }
 
 export default async function BlogPage({ searchParams }: BlogPageProps) {
 	const prisma = new PrismaClient();
 	const session = await getServerSession(authOptions);
 	const userId = Number(session?.user?.id);
-	const searchPara = await searchParams
-	const search = searchPara?.search?.trim()
+	const searchPara = await searchParams;
+	const search = searchPara?.search?.trim();
 	// console.log(userId);
-
 
 	const sort = searchPara?.sort || 'popular';
 	let orderByClause;
@@ -102,35 +94,44 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
 					<SearchSort />
 					<div className="flex flex-col gap-4">
 						{blogs.map((blog) => (
-							<Card
+							<Link
+								href={`/blogs/${blog.id}`}
 								key={blog.id}
-								className="hover:shadow-lg transition-shadow group"
+								className="cursor-pointer"
 							>
-								<CardHeader>
-									<CardTitle>{blog.title}</CardTitle>
-									<CardDescription>
-										{truncateWords(blog.description)}
-									</CardDescription>
-								</CardHeader>
-								<CardContent>
-									<div className="flex justify-end gap-4 items-center">
-										<div className="flex items-center gap-1 tesm">
-											<Heart className="w-3 h-3" />
-											<span>{blog.likes.length}</span>
+								<Card
+									key={blog.id}
+									className="hover:shadow-lg transition-shadow group"
+								>
+									<CardHeader>
+										<CardTitle>{blog.title}</CardTitle>
+										<CardDescription>
+											{truncateWords(blog.description)}
+										</CardDescription>
+									</CardHeader>
+									<CardContent>
+										<div className='flex justify-start items-center'>
+											<span className='text-xs text-gray-400 font-montserrat'>Click to Read the Full Blog</span>
 										</div>
-										<div className="flex items-center gap-1 tesm">
-											<User className="w-3 h-3" />
-											<span>{blog.author.username}</span>
+										<div className="flex justify-end gap-4 items-center">
+											<div className="flex items-center gap-1 tesm">
+												<Heart className="w-3 h-3" />
+												<span>{blog.likes.length}</span>
+											</div>
+											<div className="flex items-center gap-1 tesm">
+												<User className="w-3 h-3" />
+												<span>{blog.author.username}</span>
+											</div>
+											<div className="flex items-center gap-1 tesm">
+												<Calendar className="w-3 h-3" />
+												<span>
+													{String(blog.createdAt.toISOString().split('T')[0])}
+												</span>
+											</div>
 										</div>
-										<div className="flex items-center gap-1 tesm">
-											<Calendar className="w-3 h-3" />
-											<span>
-												{String(blog.createdAt.toISOString().split('T')[0])}
-											</span>
-										</div>
-									</div>
-								</CardContent>
-							</Card>
+									</CardContent>
+								</Card>
+							</Link>
 						))}
 					</div>
 				</div>
