@@ -28,10 +28,12 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
 	const prisma = new PrismaClient();
 	const session = await getServerSession(authOptions);
 	const userId = Number(session?.user?.id);
-	const search = searchParams?.search?.trim()
+	const searchPara = await searchParams
+	const search = searchPara?.search?.trim()
 	// console.log(userId);
 
-	const sort = searchParams?.sort || 'popular';
+
+	const sort = searchPara?.sort || 'popular';
 	let orderByClause;
 	if (sort === 'newest') {
 		orderByClause = { createdAt: 'desc' };

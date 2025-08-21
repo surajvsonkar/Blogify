@@ -10,7 +10,7 @@ import {
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Input } from './input';
 import { Search } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 export default function SearchSort() {
 	const router = useRouter();
@@ -19,8 +19,10 @@ export default function SearchSort() {
 	const currentSearch = searchParams.get('search') || '';
 	const [search, setSearch] = useState(currentSearch);
 
-	const onSearchSubmit = (e: React.FormEvent) => {
-		e.preventDefault();
+	useEffect(() => {
+		onSearchSubmit();
+	}, [search]);
+	const onSearchSubmit = () => {
 		const params = new URLSearchParams(searchParams.toString());
 		if (search.trim()) {
 			params.set('search', search.trim());
@@ -39,6 +41,7 @@ export default function SearchSort() {
 
 	const onValueChange = (value: string) => {
 		const params = new URLSearchParams(searchParams.toString());
+		params.delete('search');
 		console.log(params);
 		if (value === 'popular') {
 			params.delete('sort');
@@ -56,7 +59,7 @@ export default function SearchSort() {
 	};
 	return (
 		<div className="flex flex-col sm:flex-row mb-8 gap-4">
-			<form onSubmit={onSearchSubmit} className="relative flex-1">
+			<form className="relative flex-1">
 				<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
 				<Input
 					placeholder="Search Blogs...."
