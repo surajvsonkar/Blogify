@@ -7,32 +7,11 @@ import { startTransition, useEffect, useOptimistic, useState } from 'react';
 interface likeProps {
 	userId: number;
 	blogId: number;
+    initialLiked: boolean;
 }
 
-export default function HandleLike({ userId, blogId }: likeProps) {
-	const [liked, setLiked] = useState(false);
-	console.log(userId, blogId);
-
-	useEffect(() => {
-		alreadyLiked();
-	}, [blogId, userId]);
-
-	const alreadyLiked = async () => {
-		try {
-			const res = await axios.get(
-				`/api/blogs/like?userId=${userId}&blogId=${blogId}`,
-				{
-					data: {
-						userId,
-						blogId,
-					},
-				}
-			);
-			setLiked(res.data.data);
-		} catch (error) {
-			console.log(error);
-		}
-	};
+export default function HandleLike({ userId, blogId,initialLiked }: likeProps) {
+	const [liked, setLiked] = useState(initialLiked);
 
 	const handleLike = async () => {
 		setLiked((prevLiked) => !prevLiked);
@@ -49,6 +28,7 @@ export default function HandleLike({ userId, blogId }: likeProps) {
 			alert('an Error occurred! Try Again');
 		}
 	};
+
 	return (
 		<button
 			className={`flex items-center gap-2 py-2 px-4 rounded-md transition-all cursor-pointer border border-black ${

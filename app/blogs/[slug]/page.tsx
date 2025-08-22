@@ -2,11 +2,14 @@ import { Button } from '@/components/ui/button';
 import HandleLike from '@/components/ui/handlelike';
 import Header from '@/components/ui/header';
 import { authOptions } from '@/lib/auth';
+import { prisma } from '@/prisma';
 import { PrismaClient } from '@prisma/client';
 import { Calendar, Heart, MoveLeft, User } from 'lucide-react';
 import { getServerSession } from 'next-auth';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { useState } from 'react';
+
 
 interface BlogProps {
 	params: {
@@ -14,13 +17,24 @@ interface BlogProps {
 	};
 }
 
+async function fetchLiked(userId:number,blogId:number){
+	const likedEntry = await prisma.likedBlogs.findFirst({
+		where: {
+			userId,blogId
+		}
+	})
+	return likedEntry
+}
+
 export default async function Blog({ params }: BlogProps) {
+	let initialLiked = null
+	const prisma = new PrismaClient();
 	const session = await getServerSession(authOptions);
     const userId = Number(session.user.id)
-    console.log(userId)
-	const prisma = new PrismaClient();
-
+    // console.log(userId)
 	const { slug } = await params;
+	initialLiked = await fetchLiked(userId,Number(slug)) ? true : false
+	console.log(initialLiked)
     console.log(slug)
 
 	const res = await prisma.blog.findMany({
@@ -44,6 +58,10 @@ export default async function Blog({ params }: BlogProps) {
 
 	if (res.length === 0) {
 		return notFound();
+	}
+
+	if(initialLiked === null){
+		return <div className='flex justify-center items-center text-2xl font-montserrat'>loading.....</div>
 	}
 
 	return (
@@ -80,7 +98,7 @@ export default async function Blog({ params }: BlogProps) {
 						</div>
 					</div>
 					<div className="flex gap-4 mb-4">
-                        <HandleLike userId={userId} blogId={Number(slug)}/>
+                        <HandleLike initialLiked={initialLiked} userId={userId} blogId={Number(slug)}/>
                     </div>
 
                     <div className='max-w-3xl mx-auto'>
