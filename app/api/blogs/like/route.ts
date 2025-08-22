@@ -1,18 +1,12 @@
 import { PrismaClient } from '@prisma/client';
-import { getServerSession } from 'next-auth';
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function POST(
-	req: NextRequest,
-	{ params }: { params: { id: number } }
-) {
-	const prisma = new PrismaClient();
+const prisma = new PrismaClient();
+
+export async function POST(req: NextRequest) {
 	const body = await req.json();
-	const {id} = await params;
-    const blogId = Number(id)
+	const blogId = Number(body.blogId);
 	const userId = Number(body.userId);
-	const session = await getServerSession();
-	// const userId = Number(session?.user.id)
 
 	if (!blogId || !userId) {
 		return NextResponse.json(
@@ -28,8 +22,8 @@ export async function POST(
 	try {
 		const alreadyLiked = await prisma.likedBlogs.findFirst({
 			where: {
-				userId: Number(userId),
-				blogId: Number(blogId),
+				userId: userId,
+				blogId: blogId,
 			},
 			select: {
 				id: true,
@@ -53,8 +47,8 @@ export async function POST(
 		}
 		await prisma.likedBlogs.create({
 			data: {
-				userId: Number(userId),
-				blogId: Number(blogId),
+				userId: userId,
+				blogId: blogId,
 			},
 		});
 		return NextResponse.json(
@@ -71,5 +65,43 @@ export async function POST(
 			},
 			{ status: 500 }
 		);
+	}
+}
+
+export async function GET(req: NextRequest) {
+	const {searchParams} = new URL(req.url)
+	const blogId = Number(searchParams.get("blogId"))
+	const userId = Number(searchParams.get("userId"))
+
+	if(!blogId || !userId){
+		return NextResponse.json({
+			msg: "id is required"
+		},{
+			status: 404
+		})
+	}
+
+	try {
+		const alreadyLiked = await prisma.likedBlogs.findFirst({
+			where: {
+				userId,blogId
+			}
+		})
+		if(alreadyLiked){
+			return NextResponse.json({
+				data: true
+			})
+		} else{
+			return NextResponse.json({
+				data: false
+			})
+		}
+	} catch (error) {
+		console.log(error)
+		return NextResponse.json({
+			msg: "an Error occurred! TRY AGAIN."
+		}, {
+			status: 500
+		})
 	}
 }

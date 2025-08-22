@@ -1,5 +1,7 @@
 import { Button } from '@/components/ui/button';
+import HandleLike from '@/components/ui/handlelike';
 import Header from '@/components/ui/header';
+import { authOptions } from '@/lib/auth';
 import { PrismaClient } from '@prisma/client';
 import { Calendar, Heart, MoveLeft, User } from 'lucide-react';
 import { getServerSession } from 'next-auth';
@@ -13,11 +15,13 @@ interface BlogProps {
 }
 
 export default async function Blog({ params }: BlogProps) {
-	const session = await getServerSession();
+	const session = await getServerSession(authOptions);
+    const userId = Number(session.user.id)
+    console.log(userId)
 	const prisma = new PrismaClient();
 
 	const { slug } = await params;
-	console.log(slug);
+    console.log(slug)
 
 	const res = await prisma.blog.findMany({
 		where: {
@@ -41,6 +45,7 @@ export default async function Blog({ params }: BlogProps) {
 	if (res.length === 0) {
 		return notFound();
 	}
+
 	return (
 		<div className="min-h-screen">
 			<Header
@@ -75,10 +80,7 @@ export default async function Blog({ params }: BlogProps) {
 						</div>
 					</div>
 					<div className="flex gap-4 mb-4">
-                        <button className="flex items-center gap-2 hover:bg-accent-foreground hover:text-white py-2 px-4 rounded-md transition-all cursor-pointer border border-black">
-							<Heart className="mr-2 w-4 h-4" />
-							<p className='font-montserrat'>Like</p>
-						</button>
+                        <HandleLike userId={userId} blogId={Number(slug)}/>
                     </div>
 
                     <div className='max-w-3xl mx-auto'>
