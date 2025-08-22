@@ -2,8 +2,7 @@
 import { PrismaClient } from '@prisma/client';
 import axios from 'axios';
 import { Heart } from 'lucide-react';
-import { getSession, useSession } from 'next-auth/react';
-import { useEffect, useOptimistic, useState } from 'react';
+import { startTransition, useEffect, useOptimistic, useState } from 'react';
 
 interface likeProps {
 	userId: number;
@@ -12,11 +11,12 @@ interface likeProps {
 
 export default function HandleLike({ userId, blogId }: likeProps) {
 	const [liked, setLiked] = useState(false);
-	const [optimisticLike, addOptimisticLike] = useOptimistic(liked,(liked,newLike)=> [...liked,newLike])
 	console.log(userId, blogId);
+
 	useEffect(() => {
 		alreadyLiked();
 	}, [blogId, userId]);
+
 	const alreadyLiked = async () => {
 		try {
 			const res = await axios.get(
@@ -35,6 +35,7 @@ export default function HandleLike({ userId, blogId }: likeProps) {
 	};
 
 	const handleLike = async () => {
+		setLiked((prevLiked) => !prevLiked);
 		try {
 			const res = await axios.post('/api/blogs/like', {
 				blogId,
@@ -44,6 +45,7 @@ export default function HandleLike({ userId, blogId }: likeProps) {
 			console.log(res.data.msg);
 		} catch (error) {
 			console.log(error);
+			setLiked((prevLiked) => !prevLiked);
 			alert('an Error occurred! Try Again');
 		}
 	};
